@@ -1,15 +1,15 @@
 <?php
-namespace Dataview\IntranetOne\Console;
+namespace Dataview\Sorro\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
-use Dataview\IntranetOne\IntranetOne;
+use Dataview\Sorro\Sorro;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Str;
 
-class IOServiceInstallCmd extends Command
+class SorroServiceInstallCmd extends Command
 {
     protected $signature = "";
     protected $description = "";
@@ -17,7 +17,7 @@ class IOServiceInstallCmd extends Command
       $this->param = (object) $param;
       $this->service = Str::slug($this->param->service);
       $this->signature = "io-{$this->service}:install";
-      $this->description = "Instalação do serviço para IntranetOne - {$this->param->service}";
+      $this->description = "Instalação do serviço {$this->param->service} para Sorro Dashboard";
       parent::__construct();
     }
 
@@ -27,7 +27,7 @@ class IOServiceInstallCmd extends Command
       
       $this->line('Publicando arquivos...');
         
-      IntranetOne::installMessages($this);
+      Sorro::installMessages($this);
 
       Artisan::call('vendor:publish', [
           '--provider' => $this->param->provider
@@ -36,11 +36,11 @@ class IOServiceInstallCmd extends Command
       if(!Schema::hasTable(Str::plural($s))){
         $this->line("Executando migrações {$s} service...");
         Artisan::call('migrate', [
-          '--path' => "vendor/dataview/io{$s}/src/database/migrations",
+          '--path' => "vendor/dataview/sorro-{$s}/src/database/migrations",
         ]);
       }
       
-      IntranetOne::installMessages($this);
+      Sorro::installMessages($this);
 
       $this->line('registrando serviço...');
       
@@ -66,9 +66,9 @@ class IOServiceInstallCmd extends Command
 
       $this->line('Instalando dependencias...');
 
-      $bar = $this->output->createProgressBar(count($pkg['IODependencies'])+1);
+      $bar = $this->output->createProgressBar(count($pkg['SorroDependencies'])+1);
 
-      foreach($pkg['IODependencies'] as $key => $value){
+      foreach($pkg['SorroDependencies'] as $key => $value){
         //checa se já existe e é a mesma versão
         $_oldpkg = null;
         if(File::isDirectory(base_path("node_modules/{$key}"))){
@@ -78,17 +78,17 @@ class IOServiceInstallCmd extends Command
         try{
           $bar->advance();
           if($_oldpkg==null){
-            $this->comment(" instalando {$key}@{$pkg['IODependencies'][$key]}");
-            (new Process(['npm','install',"{$key}@{$pkg['IODependencies'][$key]}",'--save']))->setTimeout(3600)->mustRun();
+            $this->comment(" instalando {$key}@{$pkg['SorroDependencies'][$key]}");
+            (new Process(['npm','install',"{$key}@{$pkg['SorroDependencies'][$key]}",'--save']))->setTimeout(3600)->mustRun();
           }
           else{ 
             $old_version = preg_replace("/[^0-9]/", "",$_oldpkg->version);
-            $new_version = preg_replace("/[^0-9]/", "",$pkg['IODependencies'][$key]);
+            $new_version = preg_replace("/[^0-9]/", "",$pkg['SorroDependencies'][$key]);
             if($old_version == $new_version)
-              $this->comment(" em cache {$key}@{$pkg['IODependencies'][$key]}");
+              $this->comment(" em cache {$key}@{$pkg['SorroDependencies'][$key]}");
             else{
-              $this->comment(" atualizando {$key}@{$_oldpkg->version} para {$pkg['IODependencies'][$key]}");
-              (new Process(['npm','install',"{$key}@{$pkg['IODependencies'][$key]}",'--save']))->setTimeout(3600)->mustRun();
+              $this->comment(" atualizando {$key}@{$_oldpkg->version} para {$pkg['SorroDependencies'][$key]}");
+              (new Process(['npm','install',"{$key}@{$pkg['SorroDependencies'][$key]}",'--save']))->setTimeout(3600)->mustRun();
             }
           }
         }catch (ProcessFailedException $exception){
@@ -103,6 +103,6 @@ class IOServiceInstallCmd extends Command
       $bar->finish();
       /** fim do processo de instalação de pacotes */
 
-      $this->info(" IntranetOne - {$s} Instalado com sucesso! _|_ 👌");
+      $this->info(" Sorro Dashbord - {$s} Instalado com sucesso!");
   }
 }

@@ -1,15 +1,15 @@
 <?php
-namespace Dataview\IntranetOne\Console;
+namespace Dataview\Sorro\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
-use Dataview\IntranetOne\IntranetOne;
-use Dataview\IntranetOne\Service;
+use Dataview\Sorro\Sorro;
+use Dataview\Sorro\Service;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Str;
 
-class IOServiceRemoveCmd extends Command
+class SorroServiceRemoveCmd extends Command
 {
   protected $signature = "";
   protected $description = "";
@@ -18,7 +18,7 @@ class IOServiceRemoveCmd extends Command
     $this->param = (object) $param;
     $this->service = Str::slug($this->param->service);
     $this->signature = "io-{$this->service}:remove {--force}";
-    $this->description = 'Desinstalação do serviço para IntranetOne - ';
+    $this->description = "Desinstalação do serviço {$this->service} para Sorro Dashboard";
     parent::__construct();
   }
   public function handle()
@@ -41,7 +41,7 @@ class IOServiceRemoveCmd extends Command
       }
 
   
-      IntranetOne::installMessages($this);
+      Sorro::installMessages($this);
       Service::where('alias',$s)->forceDelete();
 
       foreach($tables as $t){
@@ -55,11 +55,11 @@ class IOServiceRemoveCmd extends Command
       }
 
 
-        IntranetOne::installMessages($this,1);
+        Sorro::installMessages($this,1);
         $this->line('Removendo assets...');
         (new Process(['npm','set','progress=false']))->run();
         try{
-          (new Process(['npm','remove','intranetone-'.$s]))->setTimeout(36000)->mustRun();
+          (new Process(['npm','remove','sorro-'.$s]))->setTimeout(36000)->mustRun();
         }catch (ProcessFailedException $exception){
           $this->error($exception->getMessage());
         }
@@ -68,7 +68,7 @@ class IOServiceRemoveCmd extends Command
         
         $this->info(' ');
         $titleCase = Str::title($s);
-        $this->info("IntranetOne - {$titleCase} removido com sucesso!");
+        $this->info("Sorro Dashboard - {$titleCase} removido com sucesso!");
     }
     else
       $this->info('Remoção cancelada...');
