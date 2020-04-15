@@ -1,0 +1,30 @@
+{
+  "description": "Sorro Dashboard",
+  "license": "MIT",
+  "main": "index.js",
+  "name": "sorro",
+  "version": "1.0.0",
+  "maintainers": [
+    {
+      "name": "Marcelo Disconzi",
+      "email": "mdisconzi@gmail.com"
+    },
+    {
+      "name": "Thiago Brauer",
+      "email": "thiagobrauer@gmail.com"
+    },
+    {
+      "name": "Luis Disconzi",
+      "email": "luis@dataview.com.br"
+    }
+  ],
+  "keywords": [
+    "Laravel",
+    "Sorro Dashboard",
+    "Dataview",
+    "Vue"
+  ],
+  "IODependencies": {
+    "sweetalert2": "^9.10.12"
+  }
+}
