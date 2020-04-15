@@ -1,38 +1,23 @@
 {
-  "name": "dataview/intranetone",
-  "description": "testing laravel packages creation",
+  "name": "dataview/sorro",
+  "description": "sorro dashboard - laravel package",
   "authors": [
     {
       "name": "mdisconzi",
-      "email": "mdisconzi@bitbucket.org"
+      "email": "marcelo@dataview.com.br"
     }
   ],
   "autoload": {
     "psr-4": {
-      "Dataview\\IntranetOne\\": "src/"
+      "Dataview\\Sorro\\": "src/"
     }
   },
-  "require": {
-    "cartalyst/sentinel": "^4.0",
-    "owen-it/laravel-auditing": "^10.0",
-    "yajra/laravel-datatables-oracle": "~9.0",
-    "doctrine/dbal": "^2.8",
-    "symfony/process": "^5.0.7",
-    "dataview/iouser": "dev-master",
-    "dataview/ioconfig": "dev-master",
-    "guzzlehttp/guzzle": "~6.3"
-  },
+  "require": {},
   "extra": {
     "laravel": {
       "providers": [
-        "\\Dataview\\IntranetOne\\IntranetOneServiceProvider",
-        "\\Cartalyst\\Sentinel\\Laravel\\SentinelServiceProvider"
-      ],
-      "aliases": {
-        "Activation": "Cartalyst\\Sentinel\\Laravel\\Facades\\Activation",
-        "Reminder": "Cartalyst\\Sentinel\\Laravel\\Facades\\Reminder",
-        "Sentinel": "Cartalyst\\Sentinel\\Laravel\\Facades\\Sentinel"
-      }
+        "\\Dataview\\Sorro\\SorroServiceProvider"
+      ]
     }
   }
 }
