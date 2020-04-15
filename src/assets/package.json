@@ -25,6 +25,9 @@
     "Vue"
   ],
   "IODependencies": {
+    "popper.js": "^1.12",
+    "vue": "^2.5.17",
+    "vue-template-compiler": "^2.6.10",
     "sweetalert2": "^9.10.12"
   }
 }
