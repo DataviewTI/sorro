@@ -1,7 +1,7 @@
 {
   "description": "Sorro Dashboard",
   "license": "MIT",
-  "main": "index.js",
+  "main": "main.js",
   "name": "sorro",
   "version": "1.0.0",
   "maintainers": [
@@ -24,10 +24,7 @@
     "Dataview",
     "Vue"
   ],
-  "IODependencies": {
-    "popper.js": "^1.12",
-    "vue": "^2.5.17",
-    "vue-template-compiler": "^2.6.10",
+  "SRdependencies": {
     "sweetalert2": "^9.10.12"
   }
 }

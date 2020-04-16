@@ -16,7 +16,7 @@ class SorroServiceInstallCmd extends Command
     public function __construct($param){
       $this->param = (object) $param;
       $this->service = Str::slug($this->param->service);
-      $this->signature = "io-{$this->service}:install";
+      $this->signature = "sorro-{$this->service}:install";
       $this->description = "Instalação do serviço {$this->param->service} para Sorro Dashboard";
       parent::__construct();
     }
@@ -52,6 +52,8 @@ class SorroServiceInstallCmd extends Command
       /** Processo de instalação individual de pacotes via PNPM via package.json->IODependencies */
       $pkg = json_decode(file_get_contents($this->param->provider::pkgAddr('/assets/package.json')),true);
 
+
+
       (new Process(['npm','set','progress=false']))->run();
       
       $this->comment("Instalando npm package {$pkg['name']}@{$pkg['version']}");
@@ -65,10 +67,11 @@ class SorroServiceInstallCmd extends Command
 
 
       $this->line('Instalando dependencias...');
+      $depPrefix = "SRdependencies";
 
-      $bar = $this->output->createProgressBar(count($pkg['SorroDependencies'])+1);
+      $bar = $this->output->createProgressBar(count($pkg[$depPrefix])+1);
 
-      foreach($pkg['SorroDependencies'] as $key => $value){
+      foreach($pkg[$depPrefix] as $key => $value){
         //checa se já existe e é a mesma versão
         $_oldpkg = null;
         if(File::isDirectory(base_path("node_modules/{$key}"))){
@@ -78,17 +81,17 @@ class SorroServiceInstallCmd extends Command
         try{
           $bar->advance();
           if($_oldpkg==null){
-            $this->comment(" instalando {$key}@{$pkg['SorroDependencies'][$key]}");
-            (new Process(['npm','install',"{$key}@{$pkg['SorroDependencies'][$key]}",'--save']))->setTimeout(3600)->mustRun();
+            $this->comment(" instalando {$key}@{$pkg[$depPrefix][$key]}");
+            (new Process(['npm','i',"{$key}@{$pkg[$depPrefix][$key]}",'--save']))->setTimeout(3600)->mustRun();
           }
           else{ 
             $old_version = preg_replace("/[^0-9]/", "",$_oldpkg->version);
-            $new_version = preg_replace("/[^0-9]/", "",$pkg['SorroDependencies'][$key]);
+            $new_version = preg_replace("/[^0-9]/", "",$pkg[$depPrefix][$key]);
             if($old_version == $new_version)
-              $this->comment(" em cache {$key}@{$pkg['SorroDependencies'][$key]}");
+              $this->comment(" em cache {$key}@{$pkg[$depPrefix][$key]}");
             else{
-              $this->comment(" atualizando {$key}@{$_oldpkg->version} para {$pkg['SorroDependencies'][$key]}");
-              (new Process(['npm','install',"{$key}@{$pkg['SorroDependencies'][$key]}",'--save']))->setTimeout(3600)->mustRun();
+              $this->comment(" atualizando {$key}@{$_oldpkg->version} para {$pkg[$depPrefix][$key]}");
+              (new Process(['npm','install',"{$key}@{$pkg[$depPrefix][$key]}",'--save']))->setTimeout(3600)->mustRun();
             }
           }
         }catch (ProcessFailedException $exception){

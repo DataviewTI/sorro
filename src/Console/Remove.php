@@ -1,22 +1,22 @@
 <?php
-namespace Dataview\IntranetOne\Console;
+namespace Dataview\Sorro\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Dataview\IntranetOne\IntranetOneServiceProvider;
+use Dataview\Sorro\SorroServiceProvider;
 use Cartalyst\Sentinel\Laravel\SentinelServiceProvider;
 use Illuminate\Support\Facades\Schema;
-use Dataview\IntranetOne\IntranetOne;
-use Dataview\IntranetOne\DatabaseSeeder;
-use Dataview\IntranetOne\Service;
+use Dataview\Sorro\Sorro;
+use Dataview\Sorro\DatabaseSeeder;
+use Dataview\Sorro\Service;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 
 class Remove extends Command
 {
-    protected $signature = 'intranetone:remove';
-    protected $description = 'Instalação do pacote Dataview/IntranetOne';
+    protected $signature = 'sorro:remove';
+    protected $description = 'Instalação do pacote Dataview/Sorro';
     public function handle()
     {
       $services = Service::where('id','>',1)->get();
@@ -36,7 +36,7 @@ class Remove extends Command
           }
         }
         
-        if($this->confirm('Gostaria de remover a base da IntranetOne?
+        if($this->confirm('Gostaria de remover Sorro Dashboard?
  Importante:Toda a base de dados deste projeto será zerada!)')){
 
             $colname = 'Tables_in_'.\DB::getDatabaseName();
@@ -53,13 +53,13 @@ class Remove extends Command
             $this->line(' desinstalando npm...');
             (new Process(['npm', 'set', 'progress=false']))->run();
             try{
-              (new Process(['npm', 'remove', 'intranetone']))->setTimeout(36000)->mustRun();
+              (new Process(['npm', 'remove', 'sorro']))->setTimeout(36000)->mustRun();
             }catch (ProcessFailedException $exception){
               $this->error($exception->getMessage());
             }
             (new Process(['npm', 'set', 'progress=true']))->run();
             $bar->finish();
-            $this->info(' IntranetOne desinstalada com sucesso!');
+            $this->info(' Sorro Dashboard desinstalado com sucesso!');
         }
     }
 }

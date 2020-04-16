@@ -16,10 +16,14 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class Install extends Command
 {
-    protected $name = 'sorro:install';
+    // protected $name = 'sorro:install';
+    // protected $description = 'Instalação do pacote Dataview/Sorro';
+    protected $signature = "sorro:install {--assets}";
     protected $description = 'Instalação do pacote Dataview/Sorro';
+        
     public function handle()
     {
+      if(!$this->option('assets')){
         Sorro::installMessages($this);
 
         $this->line('Publicando os arquivos de configuração...');
@@ -94,12 +98,26 @@ class Install extends Command
         Artisan::call('db:seed', [
           '--class' => DatabaseSeeder::class,
         ]);
-        
-        $this->line('Instalando IO user service...');
-        Artisan::call('io-user:install');
-        $this->line('Instalando IO config service...');
-        Artisan::call('io-config:install');
+        $this->assets();
 
+      }
+      else{
+        $this->assets();
+      }
+        //Compilação de assets
+        
+        $this->info('Sorro Dashboard Instalado com sucesso! _|_');
+    }
+
+    public function assets(){
+
+        // $this->line('instalando cross-env');
+        // (new Process(['npm','i','cross-env','--save']))->setTimeout(3600)->mustRun();
+        // $this->line('Executando npm install');
+        // (new Process(['npm','i']))->setTimeout(3600)->mustRun();
+          // Artisan::call('io-user:install');
+        // $this->line('Instalando IO config service...');
+        // Artisan::call('io-config:install');
 
         /** Processo de instalação individual de pacotes via PNPM via package.json->IODependencies */
       $pkg = json_decode(file_get_contents(SorroServiceProvider::pkgAddr('/assets/package.json')),true);
@@ -108,19 +126,20 @@ class Install extends Command
       
       $this->comment("Instalando npm package {$pkg['name']}@{$pkg['version']}");
 
-      try{
-        (new Process(['npm','install',"vendor/dataview/{$pkg['name']}/src/assets/",'--save']))->setTimeout(3600)->mustRun();
-      }
-      catch(ProcessFailedException $exception){
-        $this->error($exception->getMessage());
-      }
+      // try{
+      //   (new Process(['npm','install',"vendor/dataview/{$pkg['name']}/src/assets/",'--save']))->setTimeout(3600)->mustRun();
+      // }
+      // catch(ProcessFailedException $exception){
+      //   $this->error($exception->getMessage());
+      // }
 
 
       $this->line('Instalando dependencias...');
+      $deps = $pkg["SRdependencies"];
 
-      $bar = $this->output->createProgressBar(count($pkg['IODependencies'])+1);
+      $bar = $this->output->createProgressBar(count($deps)+1);
 
-      foreach($pkg['IODependencies'] as $key => $value){
+      foreach($deps as $key => $value){
         //checa se já existe e é a mesma versão
         $_oldpkg = null;
         if(File::isDirectory(base_path("node_modules/{$key}"))){
@@ -130,17 +149,17 @@ class Install extends Command
         try{
           $bar->advance();
           if($_oldpkg==null){
-            $this->comment(" instalando {$key}@{$pkg['IODependencies'][$key]}");
-            (new Process(['npm','install',"{$key}@{$pkg['IODependencies'][$key]}", '--save']))->setTimeout(3600)->mustRun();
+            $this->comment(" instalando {$key}@{$deps[$key]}");
+            (new Process(['npm','i',"{$key}@{$deps[$key]}", '--save']))->setTimeout(3600)->mustRun();
           }
           else{ 
             $old_version = preg_replace("/[^0-9]/", "",$_oldpkg->version);
-            $new_version = preg_replace("/[^0-9]/", "",$pkg['IODependencies'][$key]);
+            $new_version = preg_replace("/[^0-9]/", "",$deps[$key]);
             if($old_version == $new_version)
-              $this->comment(" em cache {$key}@{$pkg['IODependencies'][$key]}");
+              $this->comment(" em cache {$key}@{$deps[$key]}");
             else{
-              $this->comment(" atualizando {$key}@{$_oldpkg->version} para {$pkg['IODependencies'][$key]}");
-              (new Process(['npm','install', "{$key}@{$pkg['IODependencies'][$key]}", '--save']))->setTimeout(3600)->mustRun();
+              $this->comment(" atualizando {$key} de {$deps[$key]} para {$_oldpkg->version}");
+              (new Process(['npm','i', "{$key}@{$deps[$key]}", '--save']))->setTimeout(3600)->mustRun();
             }
           }
         }catch (ProcessFailedException $exception){
@@ -154,7 +173,5 @@ class Install extends Command
       (new Process(['npm','set','progress=true']))->run();
       $bar->finish();
       /** fim do processo de instalação de pacotes */
-
-        $this->info(' Sorro Dashboard Instalado com sucesso! _|_');
     }
 }
