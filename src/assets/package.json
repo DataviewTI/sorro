@@ -25,6 +25,7 @@
     "Vue"
   ],
   "SRdependencies": {
-    "sweetalert2": "^9.10.12"
+    "sweetalert2": "^9.10.12",
+    "vuetify": "^v2.2.22"
   }
 }

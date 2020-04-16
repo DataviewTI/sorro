@@ -1,6 +1,6 @@
 <?php
 Route::get('admin','SorroController@index');
 
-Route::get('admin/teste',function($id=null){
-  return view('Sorro::teste');
+Route::get('admin/',function($id=null){
+  return view('Sorro::index');
 });

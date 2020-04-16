@@ -1,5 +1,7 @@
 if (window.Vue === undefined) window.Vue = require("vue");
-
+import vuetify from "./plugins/vuetify"; // path to vuetify export
+import VueRouter from "vue-router";
+import routes from "./routes";
 const files = require.context("./../../Vue/", true, /\.vue$/i);
 files.keys().map((key) =>
   Vue.component(
@@ -11,15 +13,17 @@ files.keys().map((key) =>
   )
 );
 
-// console.log("dir", __dirname);
-// Vue.component("sorro-comp", require("SorroComp.vue").default);
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-const app = new Vue({
-  el: "#app",
+const router = new VueRouter({
+  routes, // short for `routes: routes`
 });
+
+Vue.use(VueRouter);
+
+new Vue({
+  router,
+  vuetify,
+}).$mount("#app");
+
+// const app = new Vue({
+//   el: "#app",
+// });
